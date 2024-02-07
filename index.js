@@ -152,11 +152,11 @@ async function getDatabaseInformation(json) {
 
                             // If the key includes any of the database-related strings, add the 'db_name' to the 'connection' property
                             if (key.includes("db_name") || key.includes("database_name") || key.includes("database") || key.includes("db")) {
-                                json[i]["connection"]["db_name"] = value.replace(/"/g, "");
+                                json[i]["connection"]["db_name"] = value.replace(/"/g, "").replace(/;/g, "");
                                 foundDatabaseNames++;
                             } // If the key includes any of the table-related strings, add the 'table' to the 'connection' property
                             else if (key.includes("table") || key.includes("layout") || key.includes("table_name") || key.includes("layout_name")) {
-                                json[i]["connection"]["table"] = value.replace(/"/g, "");
+                                json[i]["connection"]["table"] = value.replace(/"/g, "").replace(/;/g, "");
                                 foundTableNames++;
                             }
                         } catch (e) {
@@ -179,7 +179,8 @@ async function getDatabaseInformation(json) {
     console.log(`Found ${foundDatabaseNames} (${(foundDatabaseNames / json.length) * 100}%) database names and ${foundTableNames} (${(foundTableNames / json.length) * 100}%) table names out of ${json.length} items.`)
 
 // Return only the items where 'db_name' and 'table' have been defined
-    return json.filter(item => item["connection"]["db_name"] !== undefined && item["connection"]["table"] !== undefined);
+    return json;
+    // return json.filter(item => item["connection"]["db_name"] !== undefined && item["connection"]["table"] !== undefined);
 }
 
 /**
@@ -190,7 +191,7 @@ async function getDatabaseInformation(json) {
  */
 async function exportJson(data) {
     // Stringify data to JSON format, indented with 4 spaces
-    const json = JSON.stringify(data, null, 4)
+    const json = JSON.stringify({data:data})
 
     // Generating filePath by joining current directory path with the name of the output file.
     const filePath = path.join(__dirname, "output.json");
